@@ -1,25 +1,20 @@
- import React from 'react'
- import PropTypes from 'prop-types';
- import Button from './Button';
+ import React, { Component } from 'react'
+ import Button from 'components/Button';
 
- const Header = ({ title, onAdd, showAdd}) => {
-     return (
-         <header className="header">
-             <h2>{title}</h2>
-             <Button 
-                color={showAdd ? 'red' : 'green' } 
-                text={showAdd ? 'Close' : 'Add'} 
-                onClick={onAdd} />
-         </header>
-     )
- }
-
- Header.defaultProps = {
-    title: 'TaskList'
- }
-
- Header.propTypes = {
-     title: PropTypes.string.isRequired
+ class Header extends Component {
+	render() {
+		const { title, showAddTask, toggleModal } = this.props
+		return (
+			<header className="header">
+				<h2>{title}</h2>
+				<Button 
+					color={showAddTask ? 'red' : 'green' } 
+					text={showAddTask ? 'Close' : 'Add'} 
+					onClick={toggleModal}
+				/>
+			</header>
+		)
+	}
  }
  
  export default Header

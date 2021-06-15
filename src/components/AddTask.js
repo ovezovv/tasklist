@@ -1,58 +1,91 @@
-import React from 'react'
-import { useState} from 'react'
+import React, {Component} from 'react'
 
-const AddTask = ({ onAdd }) => {
-    const [text, setText] = useState ('')
-    const [day, setDay] = useState ('')
-    const [reminder, setReminder] = useState ('false')
+class AddTask extends Component {
 
-    const onSubmit = (e) => {
-        e.preventDefault()
+	constructor(props) {
+		super(props);
+		this.state = {
+			text: '', 
+			day: '',
+			reminder: false,
+		}
+	}
 
-        if(!text) {
-            alert('Please add valid task!');
-            return
-        }
+	onSubmit = (e) => {
+		e.preventDefault();
 
-        onAdd({ text, day, reminder })
+		const { text, day, reminder } = this.state
+		
+		if( !text || !day ) {
+			alert('Please fill out the fields!');
+			return false;
+		}
 
-        setText('')
-        setDay('')
-        setReminder(false)
-    }
+		this.props.addNewTask({
+			id: +new Date(),
+			text: text,
+			day: day,
+			reminder: reminder,
+		})
 
-    return (
-        <form className="add-form" onSubmit={onSubmit}>
-            <div className="form-control">
-                <label>Task</label>
-                <input 
-                    type="text" 
-                    placeholder="New Task" 
-                    value={text} 
-                    onChange={(e) => setText(e.target.value)} />
-            </div>
-            <div className="form-control">
-                <label>Day & Time</label>
-                <input 
-                    type="text" 
-                    placeholder="Day & Time" 
-                    value={day} 
-                    onChange={(e) => setDay(e.target.value)} />
-            </div>
-            <div className="form-control">
-                <label>Reminder</label>
-                <input 
-                    type="checkbox" 
-                    value={reminder} 
-                    onChange={(e) => setReminder(e.currentTarget.checked)} />
-            </div>
+		return this.setState(
+			{
+				text: '',
+				day: '',
+			}
+		)
+	}
+	
+	handleChangeInput = (event) => {
+		const {name, value} = event.target
 
-            <input 
-                className="btn" 
-                type="submit" 
-                value="Save Task" /> 
-        </form>
-    )
-} 
+		this.setState({
+			[name]: value
+		})
+	}
+
+	render() {
+		const {text, day, reminder} = this.state
+			return (
+					<form className="add-form" onSubmit={this.onSubmit}>
+							<div className="form-control">
+									<label>Task</label>
+									<input 
+										type="text" 
+										placeholder="Task text" 
+										name="text"
+										value={text}
+										onChange={this.handleChangeInput}
+									/>
+							</div>
+							<div className="form-control">
+									<label>Day & Time</label>
+									<input 
+											type="datetime-local" 
+											placeholder="Day & Time" 
+											value={day} 
+											name="day"
+											onChange={this.handleChangeInput}
+									/>
+							</div>
+							<div className="form-control-check">
+									<label>Reminder</label>
+									<input 
+										type="checkbox" 
+										name="reminder"
+										value={reminder} 
+										onChange={this.handleChangeInput}
+									/>
+							</div>
+							<input 
+								className="btn" 
+								type="submit" 
+								value="Add Task"
+								style={{ backgroundColor: 'blue', marginTop: '20px'}} 
+							/> 
+					</form>
+			)
+	}   
+}
 
 export default AddTask

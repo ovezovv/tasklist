@@ -1,72 +1,67 @@
-import Header from './components/Header'
-import Tasks from './components/Tasks'
-import AddTask from './components/AddTask'
-import { useState } from 'react'
+import { Component } from 'react';
+import Header from 'components/Header';
+import Tasks from 'components/Tasks';
+import AddTask from 'components/AddTask';
 
-const App = () => {
+const INITIAL_TASKS = [];
 
-  const [showAddTask, setShowAddTask] = useState(true)
-  const [tasks, setTasks] = useState([
-    {
-        id: 1,
-        text: 'Doctors Appointment',
-        day: 'Feb 5th 2:45pm',
-        reminder: true
-    },
-    {
-        id: 2,
-        text: 'Meeting at school',
-        day: 'Feb 6th 2:45pm',
-        reminder: false
-    },
-    {
-        id: 3,
-        text: 'Coding Time',
-        day: 'Feb 5th 2:45pm',
-        reminder: true
-    }
-])
-
-  //Add Task
-
-  const addTask = (task) => {
-    const id = Math.floor(Math.random() * 10000) + 1
-    const newTask = {id, ...task}
-    setTasks([...tasks, newTask])
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      tasks: INITIAL_TASKS,
+      showAddTask: true,
+    };
+  }
+  
+  toggleModal = () => {
+    this.setState(({showAddTask}) => ({
+      showAddTask: !showAddTask
+    }));
   }
 
-  //Delete Task
-
-  const deleteTask = (id) => {
-    setTasks(tasks.filter(task => task.id !== id))
+  addNewTask = (task) => {
+    this.setState(state => ({
+      tasks: [...state.tasks, task]
+    }))
   }
 
-  // Toggle Task
+  deleteTask = (id) => {
+    this.setState(({tasks}) => ({
+      tasks: tasks.filter((task) => task.id !== id)
+    }))
+  }
 
-  const toggleReminder = (id) => {
-    setTasks(tasks.map((task) => 
-      task.id === id ? {...task, reminder: !task.reminder} : task
+  toggleReminder = (id) => {
+    this.setState(({tasks}) => ({
+      tasks: tasks.map((task) => 
+        task.id === id ? {...task, reminder: !task.reminder} : task
       )
-    )
+    }))
   }
 
-  return (
-    <div className="container">
-      <Header 
-        title='TaskList' 
-        onAdd={() => setShowAddTask(!showAddTask)}
-        showAdd={showAddTask} />
+  render(){
+    const { tasks, showAddTask } = this.state
+    return (
+      <div className="container">
+        <Header
+          title="TaskList"
+          showAddTask={showAddTask}
+          toggleModal={this.toggleModal}
+        />
 
-      {showAddTask && <AddTask onAdd={addTask} />}
-
-      { tasks.length > 0 ? (<Tasks 
-        tasks={tasks} 
-        onDelete={deleteTask}
-        onToggle={toggleReminder}
-      />) :
-        ('No tasks yet!') }
-    </div>  
-  );
+        { showAddTask ? <AddTask addNewTask={this.addNewTask}/> : ''}
+        { tasks.length > 0 ? (
+          <Tasks 
+            tasks={this.state.tasks} 
+            onDelete={this.deleteTask}
+            onToggle={this.toggleReminder}
+          />
+        ) :
+          ('No tasks yet!') }
+      </div>  
+    );
+  }
 }
 
 export default App;
